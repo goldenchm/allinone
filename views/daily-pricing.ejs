@@ -1,0 +1,276 @@
+<%- include('layout', { 
+    title: 'Daily Pricing - Golden Chicken and Mutton Centre', 
+    showNavbar: true, 
+    branch: branch,
+    body: `
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="bg-warning text-dark p-4 rounded">
+                <h2><i class="bi bi-currency-rupee"></i> Daily Pricing Setup</h2>
+                <p class="mb-0">Set today's cost and selling prices for ${branch} branch</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h6>Select Date</h6>
+                    <form method="GET" action="/daily-pricing">
+                        <div class="input-group">
+                            <input type="date" class="form-control" name="date" value="${date}" required>
+                            <button class="btn btn-primary" type="submit">
+                                <i class="bi bi-calendar"></i> Load Prices
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i>
+                <strong>Important:</strong> Set daily prices to track accurate profit/loss for each product.
+            </div>
+        </div>
+    </div>
+    
+    <% if (error) { %>
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle"></i> <%= error %>
+                </div>
+            </div>
+        </div>
+    <% } %>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-tag"></i> Product Pricing for ${new Date(date).toLocaleDateString()}</h5>
+                </div>
+                <div class="card-body">
+                    <form id="pricingForm">
+                        <input type="hidden" name="date" value="${date}">
+                        
+                        <!-- Meat Products -->
+                        <h6 class="text-primary mb-3"><i class="bi bi-meat"></i> Meat Products</h6>
+                        <div class="row mb-4">
+                            <% 
+                            const meatProducts = ['Chicken', 'Mutton', 'Boti', 'Thalakaya'];
+                            meatProducts.forEach(product => {
+                                const existing = existingPrices.find(p => p.product === product);
+                            %>
+                                <div class="col-md-6 mb-3">
+                                    <div class="card border-primary">
+                                        <div class="card-header bg-primary text-white">
+                                            <h6 class="mb-0">${product} ${product === 'Thalakaya' ? '(per piece)' : '(per kg)'}</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <label class="form-label">Cost Price (₹)</label>
+                                                    <input type="number" class="form-control" 
+                                                           name="prices[${product}][cost_price]" 
+                                                           value="${existing ? existing.cost_price : ''}"
+                                                           step="0.01" min="0" placeholder="0.00">
+                                                </div>
+                                                <div class="col-6">
+                                                    <label class="form-label">Selling Price (₹)</label>
+                                                    <input type="number" class="form-control" 
+                                                           name="prices[${product}][selling_price]" 
+                                                           value="${existing ? existing.selling_price : ''}"
+                                                           step="0.01" min="0" placeholder="0.00">
+                                                </div>
+                                            </div>
+                                            <div class="mt-2">
+                                                <small class="text-muted profit-margin" data-product="${product}">
+                                                    <i class="bi bi-calculator"></i> Margin: --
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                        
+                        <!-- Live Animals -->
+                        <h6 class="text-success mb-3"><i class="bi bi-heart"></i> Live Animals</h6>
+                        <div class="row mb-4">
+                            <% 
+                            const animalProducts = ['Mekalu', 'Pothulu'];
+                            animalProducts.forEach(product => {
+                                const existing = existingPrices.find(p => p.product === product);
+                                const animalType = product === 'Mekalu' ? 'Goats' : 'Buffaloes';
+                            %>
+                                <div class="col-md-6 mb-3">
+                                    <div class="card border-success">
+                                        <div class="card-header bg-success text-white">
+                                            <h6 class="mb-0">${product} (${animalType}) - per animal</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <label class="form-label">Cost Price (₹)</label>
+                                                    <input type="number" class="form-control" 
+                                                           name="prices[${product}][cost_price]" 
+                                                           value="${existing ? existing.cost_price : ''}"
+                                                           step="0.01" min="0" placeholder="0.00">
+                                                </div>
+                                                <div class="col-6">
+                                                    <label class="form-label">Selling Price (₹)</label>
+                                                    <input type="number" class="form-control" 
+                                                           name="prices[${product}][selling_price]" 
+                                                           value="${existing ? existing.selling_price : ''}"
+                                                           step="0.01" min="0" placeholder="0.00">
+                                                </div>
+                                            </div>
+                                            <div class="mt-2">
+                                                <small class="text-muted profit-margin" data-product="${product}">
+                                                    <i class="bi bi-calculator"></i> Margin: --
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-check-circle"></i> Save Daily Prices
+                            </button>
+                            <a href="/dashboard" class="btn btn-secondary ms-2">
+                                <i class="bi bi-arrow-left"></i> Back to Dashboard
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Success/Error Messages -->
+    <div id="alertContainer" class="row mt-3" style="display: none;">
+        <div class="col-12">
+            <div id="alertMessage" class="alert" role="alert"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Calculate profit margins in real time
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('pricingForm');
+    
+    // Add event listeners to all price inputs
+    const priceInputs = form.querySelectorAll('input[type="number"]');
+    priceInputs.forEach(input => {
+        input.addEventListener('input', updateProfitMargins);
+    });
+    
+    // Initial calculation
+    updateProfitMargins();
+    
+    function updateProfitMargins() {
+        const products = ['Chicken', 'Mutton', 'Boti', 'Thalakaya', 'Mekalu', 'Pothulu'];
+        
+        products.forEach(product => {
+            const costInput = form.querySelector(\`input[name="prices[\${product}][cost_price]"]\`);
+            const sellingInput = form.querySelector(\`input[name="prices[\${product}][selling_price]"]\`);
+            const marginElement = form.querySelector(\`.profit-margin[data-product="\${product}"]\`);
+            
+            if (costInput && sellingInput && marginElement) {
+                const costPrice = parseFloat(costInput.value) || 0;
+                const sellingPrice = parseFloat(sellingInput.value) || 0;
+                
+                if (costPrice > 0 && sellingPrice > 0) {
+                    const profit = sellingPrice - costPrice;
+                    const margin = (profit / sellingPrice) * 100;
+                    const profitClass = profit >= 0 ? 'text-success' : 'text-danger';
+                    
+                    marginElement.innerHTML = \`
+                        <i class="bi bi-calculator"></i> 
+                        Margin: <span class="\${profitClass}">₹\${profit.toFixed(2)} (\${margin.toFixed(1)}%)</span>
+                    \`;
+                } else {
+                    marginElement.innerHTML = '<i class="bi bi-calculator"></i> Margin: --';
+                }
+            }
+        });
+    }
+    
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const submitButton = this.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+        submitButton.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+        submitButton.disabled = true;
+        
+        const formData = new FormData(this);
+        const data = {};
+        
+        // Convert FormData to nested object
+        for (let [key, value] of formData.entries()) {
+            if (key === 'date') {
+                data.date = value;
+            } else if (key.startsWith('prices[')) {
+                if (!data.prices) data.prices = {};
+                
+                const match = key.match(/prices\\[(.+?)\\]\\[(.+?)\\]/);
+                if (match) {
+                    const [, product, priceType] = match;
+                    if (!data.prices[product]) data.prices[product] = {};
+                    data.prices[product][priceType] = value;
+                }
+            }
+        }
+        
+        fetch('/save-daily-prices', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertMessage = document.getElementById('alertMessage');
+            
+            if (result.success) {
+                alertMessage.className = 'alert alert-success';
+                alertMessage.innerHTML = '<i class="bi bi-check-circle"></i> Daily prices saved successfully!';
+            } else {
+                alertMessage.className = 'alert alert-danger';
+                alertMessage.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Error: ' + (result.error || 'Failed to save prices');
+            }
+            
+            alertContainer.style.display = 'block';
+            setTimeout(() => {
+                alertContainer.style.display = 'none';
+            }, 5000);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            const alertContainer = document.getElementById('alertContainer');
+            const alertMessage = document.getElementById('alertMessage');
+            
+            alertMessage.className = 'alert alert-danger';
+            alertMessage.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Network error occurred';
+            alertContainer.style.display = 'block';
+        })
+        .finally(() => {
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+        });
+    });
+});
+</script>
+` }) %>
