@@ -171,35 +171,113 @@ document.getElementById('salesForm').addEventListener('submit', function(e) {
 
 function showReceipt(receipt) {
     const receiptContent = document.getElementById('receiptContent');
+    
+    // Determine unit based on product type
+    let unit, unitShort;
+    if (receipt.product === 'Thalakaya') {
+        unit = 'piece';
+        unitShort = 'pcs';
+    } else if (['Mekalu', 'Pothulu'].includes(receipt.product)) {
+        unit = 'animal';
+        unitShort = receipt.quantity > 1 ? 'animals' : 'animal';
+    } else {
+        unit = 'kg';
+        unitShort = 'kg';
+    }
+    
     receiptContent.innerHTML = \`
-        <div class="text-center">
-            <h6>Golden Chicken and Mutton Centre</h6>
-            <p class="mb-1">\${receipt.branch} Branch</p>
-            <p class="mb-1">Hyderabad</p>
-            <hr>
-            <p class="mb-1">Date: \${receipt.date}</p>
-            <p class="mb-1">Time: \${receipt.time}</p>
-            <hr>
-        </div>
-        
-                 <table class="table table-sm table-borderless">
-             <tr>
-                 <td>\${receipt.product}</td>
-                 <td class="text-end">\${receipt.quantity} \${receipt.product === 'Thalakaya' ? 'pcs' : 'kg'}</td>
-             </tr>
-             <tr>
-                 <td>Rate:</td>
-                 <td class="text-end">₹\${receipt.rate}/\${receipt.product === 'Thalakaya' ? 'pc' : 'kg'}</td>
-             </tr>
-            <tr style="border-top: 1px solid #000;">
-                <td><strong>Total:</strong></td>
-                <td class="text-end"><strong>₹\${receipt.total}</strong></td>
-            </tr>
-        </table>
-        
-        <div class="text-center">
-            <hr>
-            <p class="mb-0">Thank you for your business!</p>
+        <div class="receipt-print">
+            <!-- Header -->
+            <div class="text-center">
+                <h6>🏪 Golden Chicken & Mutton Centre</h6>
+                <p style="font-size: 10px; margin: 2px 0;"><strong>\${receipt.branch} Branch</strong></p>
+                <p style="font-size: 9px; margin: 1px 0;">Hyderabad, Telangana</p>
+                <p style="font-size: 9px; margin: 1px 0;">📞 Contact: +91-9876543210</p>
+            </div>
+            
+            <hr style="border-top: 2px solid #000; margin: 8px 0;">
+            
+            <!-- Transaction Details -->
+            <div style="margin: 8px 0;">
+                <table style="width: 100%; font-size: 10px;">
+                    <tr>
+                        <td><strong>Receipt #:</strong></td>
+                        <td class="text-end">\${Date.now().toString().slice(-6)}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Date:</strong></td>
+                        <td class="text-end">\${receipt.date}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Time:</strong></td>
+                        <td class="text-end">\${receipt.time}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cashier:</strong></td>
+                        <td class="text-end">Admin</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <hr style="border-top: 1px solid #000; margin: 8px 0;">
+            
+            <!-- Items -->
+            <div style="margin: 8px 0;">
+                <p style="font-weight: bold; font-size: 11px; margin-bottom: 5px;">ITEMS PURCHASED:</p>
+                <table style="width: 100%; font-size: 10px;">
+                    <tr>
+                        <td colspan="2" style="font-weight: bold; border-bottom: 1px solid #000; padding-bottom: 2px;">
+                            \${receipt.product}
+                            \${receipt.product === 'Mekalu' ? ' (Goats)' : receipt.product === 'Pothulu' ? ' (Buffaloes)' : ''}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Quantity:</td>
+                        <td class="text-end">\${receipt.quantity} \${unitShort}</td>
+                    </tr>
+                    <tr>
+                        <td>Rate:</td>
+                        <td class="text-end">₹\${receipt.rate}/\${unit}</td>
+                    </tr>
+                    <tr style="border-top: 1px solid #000; padding-top: 2px;">
+                        <td><strong>Subtotal:</strong></td>
+                        <td class="text-end"><strong>₹\${receipt.total}</strong></td>
+                    </tr>
+                </table>
+            </div>
+            
+            <hr style="border-top: 2px solid #000; margin: 8px 0;">
+            
+            <!-- Total Section -->
+            <div style="margin: 8px 0;">
+                <table style="width: 100%; font-size: 12px;">
+                    <tr>
+                        <td><strong>TOTAL AMOUNT:</strong></td>
+                        <td class="text-end"><strong>₹\${receipt.total}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Payment Method:</td>
+                        <td class="text-end">Cash</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <hr style="border-top: 1px solid #000; margin: 8px 0;">
+            
+            <!-- Footer -->
+            <div class="text-center" style="margin: 8px 0;">
+                <p style="font-size: 10px; margin: 2px 0;"><strong>Thank you for your business!</strong></p>
+                <p style="font-size: 9px; margin: 1px 0;">Fresh Quality • Best Prices</p>
+                <p style="font-size: 9px; margin: 1px 0;">Visit us again!</p>
+                <hr style="border-top: 1px solid #000; margin: 5px 0;">
+                <p style="font-size: 8px; margin: 1px 0;">GST: 29XXXXX1234X1ZX</p>
+                <p style="font-size: 8px; margin: 1px 0;">FSSAI: 12345678901234</p>
+            </div>
+            
+            <!-- QR Code Section (Optional) -->
+            <div class="text-center" style="margin-top: 10px;">
+                <p style="font-size: 8px; margin: 0;">Powered by Digital POS System</p>
+            </div>
         </div>
     \`;
     
