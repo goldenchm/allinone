@@ -97,6 +97,9 @@
     <script src="/js/app.js"></script>
     
     <!-- Beautiful Loading Script -->
+    <!-- Socket.IO Client Library -->
+    <script src="/socket.io/socket.io.js"></script>
+    
     <script>
         // Hide loading splash after page loads
         window.addEventListener('load', function() {
@@ -110,6 +113,99 @@
                     }, 500);
                 }, 800); // Show splash for at least 800ms
             }
+        });
+
+        // Real-time Socket.IO connection
+        const socket = io();
+        
+        // Join branch room if branch is available
+        const branchElement = document.querySelector('[data-branch]');
+        if (branchElement) {
+            const branch = branchElement.getAttribute('data-branch');
+            socket.emit('join-branch', branch);
+            console.log('Joined branch room:', branch);
+        }
+
+        // Global notification function
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'} 
+                                     alert-dismissible fade show position-fixed`;
+            notification.style.cssText = `
+                top: 20px; 
+                right: 20px; 
+                z-index: 9999; 
+                min-width: 300px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                border: none;
+                border-radius: 10px;
+            `;
+            notification.innerHTML = `
+                <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Listen for real-time updates
+        socket.on('stock-updated', function(data) {
+            console.log('Stock updated:', data);
+            showNotification(`Stock updated: ${data.quantity} ${data.unit} of ${data.product} added to ${data.branch}`, 'success');
+            
+            // Refresh current page if it's a relevant page
+            if (window.location.pathname.includes('stock') || 
+                window.location.pathname.includes('dashboard') ||
+                window.location.pathname.includes('report')) {
+                setTimeout(() => location.reload(), 1000);
+            }
+        });
+
+        socket.on('sale-updated', function(data) {
+            console.log('Sale updated:', data);
+            showNotification(`Sale recorded: ${data.quantity} ${data.product} sold for ₹${data.total}`, 'success');
+            
+            // Refresh current page if it's a relevant page
+            if (window.location.pathname.includes('sales') || 
+                window.location.pathname.includes('dashboard') ||
+                window.location.pathname.includes('report')) {
+                setTimeout(() => location.reload(), 1000);
+            }
+        });
+
+        socket.on('prices-updated', function(data) {
+            console.log('Prices updated:', data);
+            showNotification(`Daily prices updated for ${data.date}`, 'success');
+            
+            // Refresh current page if it's a relevant page
+            if (window.location.pathname.includes('pricing') || 
+                window.location.pathname.includes('dashboard')) {
+                setTimeout(() => location.reload(), 1000);
+            }
+        });
+
+        // Connection status
+        socket.on('connect', function() {
+            console.log('Connected to server for real-time updates');
+        });
+
+        socket.on('disconnect', function() {
+            console.log('Disconnected from server');
+            showNotification('Connection lost. Reconnecting...', 'error');
+        });
+
+        socket.on('reconnect', function() {
+            console.log('Reconnected to server');
+            showNotification('Connection restored!', 'success');
         });
     </script>
 </body>

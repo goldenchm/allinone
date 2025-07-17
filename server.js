@@ -201,6 +201,15 @@ app.post('/save-daily-prices', requireAuth, (req, res) => {
             if (err || errorOccurred) {
                 res.json({ success: false, error: 'Failed to save prices' });
             } else {
+                // Broadcast real-time update to all users in the same branch
+                const priceData = {
+                    branch,
+                    date,
+                    prices,
+                    action: 'prices_updated'
+                };
+                broadcastUpdate('prices-updated', priceData, branch);
+                
                 res.json({ success: true });
             }
         });
@@ -285,6 +294,18 @@ app.post('/add-sale', requireAuth, (req, res) => {
                 if (err) {
                     res.json({ success: false, error: err.message });
                 } else {
+                    // Broadcast real-time update to all users in the same branch
+                    const saleData = {
+                        branch,
+                        product,
+                        quantity: parseFloat(quantity),
+                        rate: parseFloat(rate),
+                        total,
+                        sale_date,
+                        action: 'sale_added'
+                    };
+                    broadcastUpdate('sale-updated', saleData, branch);
+                    
                     res.json({ 
                         success: true, 
                         saleId: this.lastID,
