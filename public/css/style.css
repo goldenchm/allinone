@@ -1,0 +1,276 @@
+/* Custom styles for Golden Chicken and Mutton Centre */
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Dashboard Cards */
+.dashboard-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* Branch Cards */
+.branch-card {
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.branch-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.branch-card.border-primary {
+    border-color: #0d6efd !important;
+    background-color: #f8f9ff;
+}
+
+/* Navbar customization */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.navbar-text {
+    background-color: rgba(255,255,255,0.1);
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+}
+
+/* Form styling */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Button styling */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Card styling */
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+    border-bottom: 1px solid rgba(0,0,0,0.125);
+    font-weight: 600;
+}
+
+/* Table styling */
+.table {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table thead th {
+    border-top: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+/* Receipt styling */
+.receipt-print {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.receipt-print h6 {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.receipt-print p {
+    margin-bottom: 4px;
+}
+
+.receipt-print hr {
+    margin: 8px 0;
+    border: 1px solid #333;
+}
+
+/* Print styles for receipts */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    
+    .receipt-print, .receipt-print * {
+        visibility: visible;
+    }
+    
+    .receipt-print {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 58mm;
+        font-size: 10px;
+    }
+    
+    @page {
+        size: 58mm auto;
+        margin: 5mm;
+    }
+}
+
+/* Thermal print specific styles */
+@media print and (max-width: 80mm) {
+    .receipt-print {
+        font-size: 10px;
+        width: 58mm;
+    }
+    
+    .receipt-print table {
+        font-size: 9px;
+    }
+    
+    .receipt-print h6 {
+        font-size: 12px;
+    }
+}
+
+/* Alert styling */
+.alert {
+    border-radius: 8px;
+    border: none;
+}
+
+.alert-success {
+    background-color: #d1f2eb;
+    color: #0f5132;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #842029;
+}
+
+/* Badge styling */
+.badge {
+    font-size: 0.8rem;
+    padding: 0.5em 0.75em;
+}
+
+/* Loading animation */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .dashboard-card {
+        margin-bottom: 1rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+}
+
+/* Header sections */
+.bg-primary {
+    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%) !important;
+}
+
+.bg-success {
+    background: linear-gradient(135deg, #198754 0%, #157347 100%) !important;
+}
+
+.bg-info {
+    background: linear-gradient(135deg, #0dcaf0 0%, #0baccc 100%) !important;
+}
+
+.bg-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #e6ac00 100%) !important;
+}
+
+/* Status indicators */
+.status-good {
+    color: #198754;
+    font-weight: bold;
+}
+
+.status-low {
+    color: #ffc107;
+    font-weight: bold;
+}
+
+.status-out {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+/* Animation for form submissions */
+@keyframes submitSuccess {
+    0% { background-color: #d1f2eb; }
+    50% { background-color: #a3e6d1; }
+    100% { background-color: #d1f2eb; }
+}
+
+.submit-success {
+    animation: submitSuccess 1s ease-in-out;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+}
