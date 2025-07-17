@@ -254,6 +254,39 @@ const ReceiptManager = {
 
 // Form validation and submission handlers
 document.addEventListener('DOMContentLoaded', function() {
+    // Smart unit selection based on product
+    const productSelects = document.querySelectorAll('select[name="product"]');
+    productSelects.forEach(productSelect => {
+        productSelect.addEventListener('change', function() {
+            const unitSelect = document.querySelector('select[name="unit"]');
+            if (unitSelect) {
+                const selectedProduct = this.value;
+                
+                // Auto-select appropriate unit based on product
+                if (selectedProduct === 'Thalakaya') {
+                    unitSelect.value = 'pieces';
+                    // Update label
+                    const quantityLabel = document.querySelector('label[for="quantity"]');
+                    if (quantityLabel) {
+                        quantityLabel.textContent = 'Quantity (Pieces)';
+                    }
+                } else if (['Chicken', 'Mutton', 'Boti'].includes(selectedProduct)) {
+                    unitSelect.value = 'kg';
+                    // Update label
+                    const quantityLabel = document.querySelector('label[for="quantity"]');
+                    if (quantityLabel) {
+                        quantityLabel.textContent = 'Quantity (kg)';
+                    }
+                } else {
+                    unitSelect.value = '';
+                    const quantityLabel = document.querySelector('label[for="quantity"]');
+                    if (quantityLabel) {
+                        quantityLabel.textContent = 'Quantity';
+                    }
+                }
+            }
+        });
+    });
     // Auto-calculate totals in sales forms
     const quantityInputs = document.querySelectorAll('input[name="quantity"]');
     const rateInputs = document.querySelectorAll('input[name="rate"]');

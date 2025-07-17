@@ -72,9 +72,11 @@ A complete web application for managing a meat retail shop with two branches: **
 
 4. **Access the application**:
    - Open your browser and navigate to: `http://localhost:3000`
-   - Login credentials:
-     - **Username**: `admin`
-     - **Password**: `admin123`
+   - **Demo Login Credentials**:
+     - **admin** / **admin123** (Full Access)
+     - **manager** / **manager123** (Manager Access)
+     - **kongara_staff** / **kongara123** (Kongara Branch Staff)
+     - **gurramguda_staff** / **gurram123** (Gurramguda Branch Staff)
 
 ### Development Mode
 
@@ -86,7 +88,8 @@ npm run dev
 ## Usage Guide
 
 ### 1. Login
-- Use the default credentials: `admin` / `admin123`
+- Use any of the demo credentials (see Installation section)
+- **Purpose of Demo Accounts**: These accounts demonstrate different user roles and access levels
 - The system will redirect to branch selection after successful login
 
 ### 2. Branch Selection
@@ -96,10 +99,14 @@ npm run dev
 
 ### 3. Adding Stock
 - Navigate to **Stock Entry** from the dashboard
-- Select product type (Chicken, Mutton, Boti, Thalakaya)
-- Enter quantity and unit (kg or pieces)
+- Select product type:
+  - **Chicken, Mutton, Boti**: Measured in **kilograms (kg)**
+  - **Thalakaya (Chicken Head)**: Measured in **pieces**
+- The system automatically selects the appropriate unit based on product
 - Select date (defaults to today)
 - Submit to add stock entry
+
+**Note**: Thalakaya is chicken head, typically sold as individual items rather than by weight.
 
 ### 4. Recording Sales
 - Go to **Sales Entry** from the dashboard
@@ -197,6 +204,52 @@ golden-chicken-mutton-centre/
 │       └── app.js           # Client-side JavaScript
 └── README.md                # This file
 ```
+
+## Demo Accounts Explained
+
+### 🎭 **Why Demo Accounts?**
+
+The application includes multiple demo accounts to demonstrate different scenarios:
+
+1. **admin / admin123**
+   - **Purpose**: Full system administrator access
+   - **Use Case**: Complete system management, all features available
+
+2. **manager / manager123**
+   - **Purpose**: Shop manager with oversight capabilities
+   - **Use Case**: Daily operations management, reporting
+
+3. **kongara_staff / kongara123**
+   - **Purpose**: Staff member specific to Kongara Kalan branch
+   - **Use Case**: Demonstrates branch-specific access (if role-based access is implemented)
+
+4. **gurramguda_staff / gurram123**
+   - **Purpose**: Staff member specific to Gurramguda branch
+   - **Use Case**: Demonstrates branch-specific access (if role-based access is implemented)
+
+**Current Implementation**: All accounts have the same access level. The different accounts are provided for:
+- **Testing**: Multiple user scenarios
+- **Demonstration**: Showing potential for role-based access
+- **Future Enhancement**: Easy expansion to role-based permissions
+
+## Product Units Explained
+
+### 🥩 **Thalakaya (Chicken Head) - Why Pieces?**
+
+**Thalakaya** is chicken head, which is:
+- Sold as **individual items** (pieces)
+- Not measured by weight like other meat products
+- Each piece is counted separately
+- Common practice in South Indian meat shops
+
+**Other Products** (Chicken, Mutton, Boti):
+- Sold by **weight** (kilograms)
+- Measured accurately for pricing
+- Standard meat retail practice
+
+The system **automatically selects** the correct unit when you choose a product:
+- Select "Thalakaya" → Units automatically set to "pieces"
+- Select other products → Units automatically set to "kg"
 
 ## Customization
 
