@@ -50,6 +50,18 @@ db.serialize(() => {
         sale_date TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )`);
+    
+    // Daily pricing table
+    db.run(`CREATE TABLE IF NOT EXISTS daily_prices (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        branch TEXT,
+        product TEXT,
+        cost_price REAL,
+        selling_price REAL,
+        date TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(branch, product, date)
+    )`);
 });
 
 // Middleware
@@ -121,9 +133,73 @@ app.get('/dashboard', requireAuth, (req, res) => {
     if (!req.session.branch) {
         return res.redirect('/branch-selection');
     }
-    res.render('dashboard', { 
-        branch: req.session.branch,
-        username: req.session.username 
+    
+    // Check if daily prices are set for today
+    const today = moment().format('YYYY-MM-DD');
+    const branch = req.session.branch;
+    
+    db.get('SELECT COUNT(*) as price_count FROM daily_prices WHERE branch = ? AND date = ?', 
+        [branch, today], (err, result) => {
+            const pricesSet = result && result.price_count > 0;
+            
+            res.render('dashboard', { 
+                branch: req.session.branch,
+                username: req.session.username,
+                pricesSet: pricesSet,
+                today: today
+            });
+        });
+});
+
+// Daily pricing setup
+app.get('/daily-pricing', requireAuth, (req, res) => {
+    if (!req.session.branch) {
+        return res.redirect('/branch-selection');
+    }
+    
+    const branch = req.session.branch;
+    const date = req.query.date || moment().format('YYYY-MM-DD');
+    
+    // Get existing prices for the date
+    db.all('SELECT * FROM daily_prices WHERE branch = ? AND date = ?', [branch, date], (err, existingPrices) => {
+        res.render('daily-pricing', { 
+            branch: branch,
+            date: date,
+            existingPrices: existingPrices || [],
+            error: err ? err.message : null
+        });
+    });
+});
+
+app.post('/save-daily-prices', requireAuth, (req, res) => {
+    const branch = req.session.branch;
+    const { date, prices } = req.body;
+    
+    // Begin transaction
+    db.serialize(() => {
+        // Clear existing prices for the date
+        db.run('DELETE FROM daily_prices WHERE branch = ? AND date = ?', [branch, date]);
+        
+        // Insert new prices
+        const stmt = db.prepare('INSERT OR REPLACE INTO daily_prices (branch, product, cost_price, selling_price, date) VALUES (?, ?, ?, ?, ?)');
+        
+        let errorOccurred = false;
+        for (const productName in prices) {
+            const price = prices[productName];
+            if (price.cost_price && price.selling_price) {
+                stmt.run([branch, productName, price.cost_price, price.selling_price, date], (err) => {
+                    if (err) errorOccurred = true;
+                });
+            }
+        }
+        
+        stmt.finalize((err) => {
+            if (err || errorOccurred) {
+                res.json({ success: false, error: 'Failed to save prices' });
+            } else {
+                res.json({ success: true });
+            }
+        });
     });
 });
 
