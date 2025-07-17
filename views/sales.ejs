@@ -43,6 +43,9 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="rate" class="form-label">Rate per kg/piece (₹)</label>
+                                <div class="form-text mb-2">
+                                    <small>• Chicken/Mutton/Boti: Rate per kg | • Thalakaya: Rate per piece</small>
+                                </div>
                                 <input type="number" class="form-control" id="rate" name="rate" 
                                        step="0.01" min="0" required>
                             </div>
@@ -173,15 +176,15 @@ function showReceipt(receipt) {
             <hr>
         </div>
         
-        <table class="table table-sm table-borderless">
-            <tr>
-                <td>\${receipt.product}</td>
-                <td class="text-end">\${receipt.quantity} kg</td>
-            </tr>
-            <tr>
-                <td>Rate:</td>
-                <td class="text-end">₹\${receipt.rate}/kg</td>
-            </tr>
+                 <table class="table table-sm table-borderless">
+             <tr>
+                 <td>\${receipt.product}</td>
+                 <td class="text-end">\${receipt.quantity} \${receipt.product === 'Thalakaya' ? 'pcs' : 'kg'}</td>
+             </tr>
+             <tr>
+                 <td>Rate:</td>
+                 <td class="text-end">₹\${receipt.rate}/\${receipt.product === 'Thalakaya' ? 'pc' : 'kg'}</td>
+             </tr>
             <tr style="border-top: 1px solid #000;">
                 <td><strong>Total:</strong></td>
                 <td class="text-end"><strong>₹\${receipt.total}</strong></td>

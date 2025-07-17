@@ -20,8 +20,11 @@ db.serialize(() => {
         password TEXT
     )`);
     
-    // Insert default admin user
+    // Insert demo users for testing and demonstration
     db.run(`INSERT OR IGNORE INTO users (username, password) VALUES ('admin', 'admin123')`);
+    db.run(`INSERT OR IGNORE INTO users (username, password) VALUES ('manager', 'manager123')`);
+    db.run(`INSERT OR IGNORE INTO users (username, password) VALUES ('kongara_staff', 'kongara123')`);
+    db.run(`INSERT OR IGNORE INTO users (username, password) VALUES ('gurramguda_staff', 'gurram123')`);
     
     // Stock table
     db.run(`CREATE TABLE IF NOT EXISTS stock (
