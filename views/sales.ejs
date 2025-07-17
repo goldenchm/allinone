@@ -26,10 +26,16 @@
                                 <label for="product" class="form-label">Product</label>
                                 <select class="form-select" id="product" name="product" required>
                                     <option value="">Select Product</option>
-                                    <option value="Chicken">Chicken</option>
-                                    <option value="Mutton">Mutton</option>
-                                    <option value="Boti">Boti</option>
-                                    <option value="Thalakaya">Thalakaya</option>
+                                    <optgroup label="Meat Products">
+                                        <option value="Chicken">Chicken</option>
+                                        <option value="Mutton">Mutton</option>
+                                        <option value="Boti">Boti</option>
+                                        <option value="Thalakaya">Thalakaya</option>
+                                    </optgroup>
+                                    <optgroup label="Live Animals">
+                                        <option value="Mekalu">Mekalu (Goats)</option>
+                                        <option value="Pothulu">Pothulu (Buffaloes)</option>
+                                    </optgroup>
                                 </select>
                             </div>
                             
@@ -44,7 +50,7 @@
                             <div class="col-md-6 mb-3">
                                 <label for="rate" class="form-label">Rate per kg/piece (₹)</label>
                                 <div class="form-text mb-2">
-                                    <small>• Chicken/Mutton/Boti: Rate per kg | • Thalakaya: Rate per piece</small>
+                                    <small>• Chicken/Mutton/Boti: Rate per kg | • Thalakaya: Rate per piece | • Mekalu/Pothulu: Rate per animal</small>
                                 </div>
                                 <input type="number" class="form-control" id="rate" name="rate" 
                                        step="0.01" min="0" required>
