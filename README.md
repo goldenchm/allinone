@@ -11,8 +11,9 @@ A complete web application for managing a meat retail shop with two branches: **
 
 ### 📦 Stock Management
 - **Manual Stock Entry**: Daily stock entry for received inventory
-- **Product Management**: Supports Chicken, Mutton, Boti, and Thalakaya
-- **Quantity & Unit Tracking**: Track quantities in kg or pieces
+- **Product Management**: Supports Chicken, Mutton, Boti, Thalakaya, Mekalu (Goats), and Pothulu (Buffaloes)
+- **Quantity & Unit Tracking**: Track quantities in kg, pieces, or animals
+- **Purchase Price Tracking**: Record cost prices for profit/loss calculation
 - **Date-wise Stock Recording**: Maintain stock records by date
 
 ### 💰 Sales Management
@@ -29,6 +30,7 @@ A complete web application for managing a meat retail shop with two branches: **
 ### 📊 Reporting
 - **Stock Reports**: View remaining stock by product, branch, and date
 - **Daily Reports**: Comprehensive daily summary with stock in, sales out, and remaining inventory
+- **Profit/Loss Reports**: Track profits and losses with daily pricing
 - **Product-wise Analysis**: Detailed breakdown by individual products
 - **Revenue Tracking**: Total sales and revenue calculations
 
@@ -122,7 +124,13 @@ npm run dev
 - Use date filters to view historical data
 - Print reports using the browser's print function
 
-### 6. Receipt Printing
+### 6. Daily Pricing Setup
+- Navigate to **Daily Pricing** from the dashboard
+- Set cost and selling prices for each product daily
+- System calculates profit margins in real-time
+- Essential for accurate profit/loss tracking
+
+### 7. Receipt Printing
 - After each sale, a receipt modal will appear
 - Click "Print Receipt" to open the thermal print view
 - The receipt is optimized for 58mm thermal paper
@@ -249,6 +257,7 @@ The application includes multiple demo accounts to demonstrate different scenari
 
 The system **automatically selects** the correct unit when you choose a product:
 - Select "Thalakaya" → Units automatically set to "pieces"
+- Select "Mekalu/Pothulu" → Units automatically set to "animals"
 - Select other products → Units automatically set to "kg"
 
 ## Customization
