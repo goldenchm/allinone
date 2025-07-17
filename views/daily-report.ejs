@@ -1,0 +1,322 @@
+<%- include('layout', { 
+    title: 'Daily Report - Golden Chicken and Mutton Centre', 
+    showNavbar: true, 
+    branch: branch,
+    body: `
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="bg-warning text-dark p-4 rounded">
+                <h2><i class="bi bi-file-earmark-text"></i> Daily Report</h2>
+                <p class="mb-0">Complete daily summary for ${branch} branch</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h6>Select Date for Report</h6>
+                    <form method="GET" action="/daily-report">
+                        <div class="input-group">
+                            <input type="date" class="form-control" name="date" value="${date}" required>
+                            <button class="btn btn-warning" type="submit">
+                                <i class="bi bi-search"></i> Generate Report
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h6>Report Actions</h6>
+                    <button class="btn btn-primary me-2" onclick="window.print()">
+                        <i class="bi bi-printer"></i> Print Report
+                    </button>
+                    <a href="/dashboard" class="btn btn-secondary">
+                        <i class="bi bi-house"></i> Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <% if (error) { %>
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle"></i> <%= error %>
+                </div>
+            </div>
+        </div>
+    <% } %>
+    
+    <!-- Report Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h4>Daily Report - ${new Date(date).toLocaleDateString('en-IN', { 
+                                weekday: 'long', 
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric' 
+                            })}</h4>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <h5>${branch} Branch</h5>
+                            <small>Hyderabad</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stock Entries Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-box"></i> Stock Entries</h5>
+                </div>
+                <div class="card-body">
+                    <% if (stockData && stockData.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Unit</th>
+                                        <th>Time Added</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% 
+                                    let totalStockIn = 0;
+                                    stockData.forEach(stock => { 
+                                        totalStockIn += stock.quantity;
+                                    %>
+                                        <tr>
+                                            <td><%= stock.product %></td>
+                                            <td><%= stock.quantity %></td>
+                                            <td><%= stock.unit %></td>
+                                            <td><%= new Date(stock.created_at).toLocaleTimeString() %></td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                                <tfoot class="table-success">
+                                    <tr>
+                                        <th>Total Stock Added</th>
+                                        <th><%= totalStockIn %></th>
+                                        <th>kg</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                            <p class="mt-2">No stock entries for this date</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sales Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-cart"></i> Sales Transactions</h5>
+                </div>
+                <div class="card-body">
+                    <% if (salesData && salesData.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead class="table-success">
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Quantity Sold</th>
+                                        <th>Rate (₹/kg)</th>
+                                        <th>Total Amount (₹)</th>
+                                        <th>Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% 
+                                    let totalQuantitySold = 0;
+                                    let totalRevenue = 0;
+                                    salesData.forEach(sale => { 
+                                        totalQuantitySold += sale.quantity;
+                                        totalRevenue += sale.total;
+                                    %>
+                                        <tr>
+                                            <td><%= sale.product %></td>
+                                            <td><%= sale.quantity %> kg</td>
+                                            <td>₹<%= sale.rate %></td>
+                                            <td><strong>₹<%= sale.total %></strong></td>
+                                            <td><%= new Date(sale.created_at).toLocaleTimeString() %></td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                                <tfoot class="table-warning">
+                                    <tr>
+                                        <th>Total Sales</th>
+                                        <th><%= totalQuantitySold %> kg</th>
+                                        <th></th>
+                                        <th><strong>₹<%= totalRevenue %></strong></th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-cart-x" style="font-size: 2rem;"></i>
+                            <p class="mt-2">No sales recorded for this date</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-box" style="font-size: 2rem;"></i>
+                    <h6 class="mt-2">Total Stock Added</h6>
+                    <h3><%= stockData ? stockData.reduce((sum, s) => sum + s.quantity, 0) : 0 %> kg</h3>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-cart-check" style="font-size: 2rem;"></i>
+                    <h6 class="mt-2">Total Quantity Sold</h6>
+                    <h3><%= salesData ? salesData.reduce((sum, s) => sum + s.quantity, 0) : 0 %> kg</h3>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark">
+                <div class="card-body text-center">
+                    <i class="bi bi-currency-rupee" style="font-size: 2rem;"></i>
+                    <h6 class="mt-2">Total Revenue</h6>
+                    <h3>₹<%= salesData ? salesData.reduce((sum, s) => sum + s.total, 0) : 0 %></h3>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-receipt" style="font-size: 2rem;"></i>
+                    <h6 class="mt-2">Total Transactions</h6>
+                    <h3><%= salesData ? salesData.length : 0 %></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Product-wise Summary -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-pie-chart"></i> Product-wise Summary</h5>
+                </div>
+                <div class="card-body">
+                    <% 
+                    // Calculate product-wise summary
+                    const productSummary = {};
+                    const products = ['Chicken', 'Mutton', 'Boti', 'Thalakaya'];
+                    
+                    products.forEach(product => {
+                        productSummary[product] = {
+                            stockIn: 0,
+                            sold: 0,
+                            revenue: 0
+                        };
+                    });
+                    
+                    if (stockData) {
+                        stockData.forEach(stock => {
+                            if (productSummary[stock.product]) {
+                                productSummary[stock.product].stockIn += stock.quantity;
+                            }
+                        });
+                    }
+                    
+                    if (salesData) {
+                        salesData.forEach(sale => {
+                            if (productSummary[sale.product]) {
+                                productSummary[sale.product].sold += sale.quantity;
+                                productSummary[sale.product].revenue += sale.total;
+                            }
+                        });
+                    }
+                    %>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Stock Added (kg)</th>
+                                    <th>Quantity Sold (kg)</th>
+                                    <th>Remaining (kg)</th>
+                                    <th>Revenue (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% Object.keys(productSummary).forEach(product => { 
+                                    const data = productSummary[product];
+                                    const remaining = data.stockIn - data.sold;
+                                %>
+                                    <tr>
+                                        <td><strong><%= product %></strong></td>
+                                        <td><%= data.stockIn %></td>
+                                        <td><%= data.sold %></td>
+                                        <td>
+                                            <span class="badge <%= remaining > 5 ? 'bg-success' : remaining > 0 ? 'bg-warning' : 'bg-danger' %>">
+                                                <%= remaining %>
+                                            </span>
+                                        </td>
+                                        <td><strong>₹<%= data.revenue %></strong></td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Set today's date as default if no date is provided
+document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.querySelector('input[name="date"]');
+    if (!dateInput.value) {
+        dateInput.value = new Date().toISOString().split('T')[0];
+    }
+});
+</script>
+` }) %>
