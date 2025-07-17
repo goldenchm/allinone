@@ -26,10 +26,16 @@
                                 <label for="product" class="form-label">Product Type</label>
                                 <select class="form-select" id="product" name="product" required>
                                     <option value="">Select Product</option>
-                                    <option value="Chicken">Chicken</option>
-                                    <option value="Mutton">Mutton</option>
-                                    <option value="Boti">Boti</option>
-                                    <option value="Thalakaya">Thalakaya</option>
+                                    <optgroup label="Meat Products">
+                                        <option value="Chicken">Chicken</option>
+                                        <option value="Mutton">Mutton</option>
+                                        <option value="Boti">Boti</option>
+                                        <option value="Thalakaya">Thalakaya</option>
+                                    </optgroup>
+                                    <optgroup label="Live Animals">
+                                        <option value="Mekalu">Mekalu (Goats)</option>
+                                        <option value="Pothulu">Pothulu (Buffaloes)</option>
+                                    </optgroup>
                                 </select>
                             </div>
                             
@@ -47,12 +53,30 @@
                                     <option value="">Select Unit</option>
                                     <option value="kg">Kilograms (kg) - For Chicken, Mutton, Boti</option>
                                     <option value="pieces">Pieces - For Thalakaya (Chicken Head)</option>
+                                    <option value="animals">Animals - For Mekalu (Goats), Pothulu (Buffaloes)</option>
                                 </select>
                             </div>
                             
                             <div class="col-md-6 mb-3">
+                                <label for="purchase_price" class="form-label">Purchase Price per Unit (₹)</label>
+                                <div class="form-text mb-2">
+                                    <small id="price-help">Enter the cost price for this stock</small>
+                                </div>
+                                <input type="number" class="form-control" id="purchase_price" name="purchase_price" 
+                                       step="0.01" min="0" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
                                 <label for="date" class="form-label">Date</label>
                                 <input type="date" class="form-control" id="date" name="date" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="total_cost" class="form-label">Total Cost (₹)</label>
+                                <input type="number" class="form-control" id="total_cost" name="total_cost" 
+                                       step="0.01" readonly>
                             </div>
                         </div>
                         

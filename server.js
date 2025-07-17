@@ -33,6 +33,8 @@ db.serialize(() => {
         product TEXT,
         quantity REAL,
         unit TEXT,
+        purchase_price REAL,
+        total_cost REAL,
         date TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )`);
@@ -134,11 +136,12 @@ app.get('/stock', requireAuth, (req, res) => {
 });
 
 app.post('/add-stock', requireAuth, (req, res) => {
-    const { product, quantity, unit, date } = req.body;
+    const { product, quantity, unit, purchase_price, date } = req.body;
     const branch = req.session.branch;
+    const total_cost = quantity * purchase_price;
     
-    db.run('INSERT INTO stock (branch, product, quantity, unit, date) VALUES (?, ?, ?, ?, ?)',
-        [branch, product, quantity, unit, date], (err) => {
+    db.run('INSERT INTO stock (branch, product, quantity, unit, purchase_price, total_cost, date) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [branch, product, quantity, unit, purchase_price, total_cost, date], (err) => {
             if (err) {
                 res.json({ success: false, error: err.message });
             } else {
@@ -263,6 +266,60 @@ app.get('/daily-report', requireAuth, (req, res) => {
                 date, 
                 error: null 
             });
+        });
+    });
+});
+
+// Profit/Loss report
+app.get('/profit-loss', requireAuth, (req, res) => {
+    if (!req.session.branch) {
+        return res.redirect('/branch-selection');
+    }
+    
+    const branch = req.session.branch;
+    const date = req.query.date || moment().format('YYYY-MM-DD');
+    
+    // Get detailed profit/loss data
+    db.all(`
+        SELECT 
+            s.product,
+            s.quantity as stock_quantity,
+            s.purchase_price,
+            s.total_cost,
+            COALESCE(SUM(sales.quantity), 0) as sold_quantity,
+            COALESCE(SUM(sales.total), 0) as sales_revenue,
+            COALESCE(AVG(sales.rate), 0) as avg_selling_price,
+            (s.quantity - COALESCE(SUM(sales.quantity), 0)) as remaining_quantity
+        FROM stock s
+        LEFT JOIN sales ON s.branch = sales.branch AND s.product = sales.product AND s.date = sales.sale_date
+        WHERE s.branch = ? AND s.date = ?
+        GROUP BY s.id, s.product, s.quantity, s.purchase_price, s.total_cost
+    `, [branch, date], (err, profitData) => {
+        if (err) {
+            return res.render('profit-loss', { error: err.message, profitData: [], branch, date });
+        }
+        
+        // Calculate profit/loss for each item
+        const enrichedData = profitData.map(item => {
+            const soldValue = item.sold_quantity * item.purchase_price; // Cost of goods sold
+            const profit = item.sales_revenue - soldValue;
+            const profitMargin = item.sales_revenue > 0 ? ((profit / item.sales_revenue) * 100) : 0;
+            const remainingValue = item.remaining_quantity * item.purchase_price;
+            
+            return {
+                ...item,
+                cost_of_goods_sold: soldValue,
+                profit: profit,
+                profit_margin: profitMargin,
+                remaining_value: remainingValue
+            };
+        });
+        
+        res.render('profit-loss', { 
+            profitData: enrichedData, 
+            branch, 
+            date, 
+            error: null 
         });
     });
 });

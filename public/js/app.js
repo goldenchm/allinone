@@ -437,23 +437,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Auto-select appropriate unit based on product
                 if (selectedProduct === 'Thalakaya') {
                     unitSelect.value = 'pieces';
-                    // Update label
-                    const quantityLabel = document.querySelector('label[for="quantity"]');
-                    if (quantityLabel) {
-                        quantityLabel.textContent = 'Quantity (Pieces)';
-                    }
+                    updateQuantityLabel('Quantity (Pieces)');
+                    updatePriceHelp('Enter cost per piece for Thalakaya');
                 } else if (['Chicken', 'Mutton', 'Boti'].includes(selectedProduct)) {
                     unitSelect.value = 'kg';
-                    // Update label
-                    const quantityLabel = document.querySelector('label[for="quantity"]');
-                    if (quantityLabel) {
-                        quantityLabel.textContent = 'Quantity (kg)';
-                    }
+                    updateQuantityLabel('Quantity (kg)');
+                    updatePriceHelp('Enter cost per kg for meat products');
+                } else if (['Mekalu', 'Pothulu'].includes(selectedProduct)) {
+                    unitSelect.value = 'animals';
+                    updateQuantityLabel('Number of Animals');
+                    updatePriceHelp(`Enter cost per ${selectedProduct === 'Mekalu' ? 'goat' : 'buffalo'}`);
                 } else {
                     unitSelect.value = '';
+                    updateQuantityLabel('Quantity');
+                    updatePriceHelp('Enter the cost price for this stock');
+                }
+                
+                function updateQuantityLabel(text) {
                     const quantityLabel = document.querySelector('label[for="quantity"]');
                     if (quantityLabel) {
-                        quantityLabel.textContent = 'Quantity';
+                        quantityLabel.textContent = text;
+                    }
+                }
+                
+                function updatePriceHelp(text) {
+                    const priceHelp = document.getElementById('price-help');
+                    if (priceHelp) {
+                        priceHelp.textContent = text;
                     }
                 }
             }
@@ -462,13 +472,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // Auto-calculate totals in sales forms
     const quantityInputs = document.querySelectorAll('input[name="quantity"]');
     const rateInputs = document.querySelectorAll('input[name="rate"]');
+    const purchasePriceInputs = document.querySelectorAll('input[name="purchase_price"]');
     
     quantityInputs.forEach(input => {
         input.addEventListener('input', calculateTotal);
+        input.addEventListener('input', calculateTotalCost);
     });
     
     rateInputs.forEach(input => {
         input.addEventListener('input', calculateTotal);
+    });
+    
+    purchasePriceInputs.forEach(input => {
+        input.addEventListener('input', calculateTotalCost);
     });
     
     function calculateTotal() {
@@ -481,6 +497,19 @@ document.addEventListener('DOMContentLoaded', function() {
             const rate = parseFloat(rateInput.value) || 0;
             const total = quantity * rate;
             totalInput.value = total.toFixed(2);
+        }
+    }
+    
+    function calculateTotalCost() {
+        const quantityInput = document.querySelector('input[name="quantity"]');
+        const purchasePriceInput = document.querySelector('input[name="purchase_price"]');
+        const totalCostInput = document.querySelector('input[name="total_cost"]');
+        
+        if (quantityInput && purchasePriceInput && totalCostInput) {
+            const quantity = parseFloat(quantityInput.value) || 0;
+            const purchasePrice = parseFloat(purchasePriceInput.value) || 0;
+            const totalCost = quantity * purchasePrice;
+            totalCostInput.value = totalCost.toFixed(2);
         }
     }
     
