@@ -4,8 +4,12 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const moment = require('moment');
 const path = require('path');
+const http = require('http');
+const socketIo = require('socket.io');
 
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
 const PORT = process.env.PORT || 3000;
 
 // Database setup
@@ -221,6 +225,19 @@ app.post('/add-stock', requireAuth, (req, res) => {
             if (err) {
                 res.json({ success: false, error: err.message });
             } else {
+                // Broadcast real-time update to all users in the same branch
+                const stockData = {
+                    branch,
+                    product,
+                    quantity: parseFloat(quantity),
+                    unit,
+                    purchase_price: parseFloat(purchase_price),
+                    total_cost,
+                    date,
+                    action: 'stock_added'
+                };
+                broadcastUpdate('stock-updated', stockData, branch);
+                
                 res.json({ success: true });
             }
         });
@@ -406,7 +423,32 @@ app.get('/logout', (req, res) => {
     res.redirect('/login');
 });
 
+// Socket.IO connection handling for real-time updates
+io.on('connection', (socket) => {
+    console.log('User connected:', socket.id);
+    
+    // Join branch-specific rooms for targeted updates
+    socket.on('join-branch', (branch) => {
+        socket.join(branch);
+        console.log(`User ${socket.id} joined branch: ${branch}`);
+    });
+    
+    socket.on('disconnect', () => {
+        console.log('User disconnected:', socket.id);
+    });
+});
+
+// Helper function to broadcast real-time updates
+function broadcastUpdate(eventType, data, branch = null) {
+    if (branch) {
+        io.to(branch).emit(eventType, data);
+    } else {
+        io.emit(eventType, data);
+    }
+    console.log(`Broadcasting ${eventType} to ${branch || 'all branches'}`);
+}
+
 // Start server
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Golden Chicken and Mutton Centre app running on port ${PORT}`);
 });
